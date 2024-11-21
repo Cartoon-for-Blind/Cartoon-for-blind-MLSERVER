@@ -20,20 +20,24 @@ ALLOWED_EXTENSIONS = {'jpg'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def check_no_dialogue(texts, messages): # messages 내부의 "[No dialogue]" 덮어쓰기 및 최적화 함수
+
+def check_no_dialogue(texts, messages):
     for i, message_group in enumerate(messages):
         # texts[i]가 비어있지 않은 경우 건너뜀
         if texts[i]:
             continue
-        for j, message in enumerate(message_group):
-            data = json.loads(message)  # JSON 문자열을 딕셔너리로 변환
+        # texts[i]가 비어있는 경우, 첫 번째 메시지에 대해 수정 수행
+        if message_group:
+            data = json.loads(message_group[0])  # 첫 번째 메시지를 JSON으로 변환
             dialogue_entries = data.get("dialogue", [])
             # 모든 dialogue 값을 "[No dialogue]"로 설정
             for entry in dialogue_entries:
                 for key in entry:
                     entry[key] = "[No dialogue]"
             # 수정된 데이터를 다시 JSON 문자열로 변환하여 덮어쓰기
-            messages[i][j] = json.dumps(data, ensure_ascii=False)
+            messages[i][0] = json.dumps(data, ensure_ascii=False)
+            # 나머지 메시지는 삭제
+            messages[i] = messages[i][:1]
     return messages
 
 def get_result(image_name, is_new_assidtant = False, id = "0") :

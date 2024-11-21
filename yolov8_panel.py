@@ -11,7 +11,6 @@ from s3_upload import *      # imread_url()
 from clova_ocr import *      # image_ocr()
 
 
-
 def split_image(name): # 이미지 자르기
     # image = imread_url(f"https://meowyeokbucket.s3.ap-northeast-2.amazonaws.com/comics/Pages/{name}.jpg") # 확장자 같이써줘야함
     image_path = f"C:\\Users\\vkdnj\\Zolph\\comics\\proc_images\\{name}.jpg"
@@ -52,19 +51,21 @@ def open_directory(path):  # 디렉토리가 존재하는지 확인
     else:
         print(f"Error: The directory '{path}' does not exist.")
 
+def sort_panels(boxes_with_objects, y_threshold=20, y_weight=1.5):
 
-def sort_panels(boxes_with_objects, y_threshold=20): # 컷 순서 정렬하기
+    # x1 + y_weight * y1 기준으로 초기 정렬
+    boxes_with_objects.sort(key=lambda item: item[0][0] + y_weight * item[0][1])
 
-    # 먼저 y1 값을 기준으로 오름차순 정렬
-    boxes_with_objects.sort(key=lambda item: item[0][1])
-
-    # 비슷한 y 값 그룹으로 나누기
+    # 비슷한 x1 + y_weight * y1 값 그룹으로 나누기
     grouped_boxes = []
     current_group = [boxes_with_objects[0]]
     
     for i in range(1, len(boxes_with_objects)):
-        _, y1_current, _, _ = boxes_with_objects[i][0]
-        _, y1_last, _, _ = boxes_with_objects[i - 1][0]
+        current_box = boxes_with_objects[i][0]
+        last_box = boxes_with_objects[i - 1][0]
+
+        # 현재 박스와 이전 박스의 y1 값 차이 확인
+        y1_current, y1_last = current_box[1], last_box[1]
         
         # y 값이 임계값 이내라면 같은 그룹에 추가
         if abs(y1_current - y1_last) <= y_threshold:
@@ -77,14 +78,15 @@ def sort_panels(boxes_with_objects, y_threshold=20): # 컷 순서 정렬하기
     # 마지막 그룹 추가
     if current_group:
         grouped_boxes.append(current_group)
-    
-    # 각 그룹 내에서 x1 값을 기준으로 정렬
+
+    # 그룹 내 정렬 (x1 + y_weight * y1 기준)
     for group in grouped_boxes:
-        group.sort(key=lambda item: item[0][0])  # x1을 기준으로 정렬
+        group.sort(key=lambda item: item[0][0] + y_weight * item[0][1])
 
     # 그룹을 flatten하여 반환
     sorted_boxes = [item for group in grouped_boxes for item in group]
     return sorted_boxes
+
 
 def calculate_iou(box1, box2):
     # 박스 좌표 추출

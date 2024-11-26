@@ -77,9 +77,13 @@ def get_result(image_name, is_new_assidtant = False, id = "0") :
         messages_left = assistant_image_captioning(left_name, texts_left, assistant_id, thread_id)
         messages_right = assistant_image_captioning(right_name, texts_right, assistant_id, thread_id)
         
-        messages = messages_left + messages_right
-        print(messages)
-        messages = check_no_dialogue(texts_left+texts_right, messages)
+        print(messages_left)
+        print(messages_right)
+        
+        messages_left = check_no_dialogue(texts_right, messages_left)
+        messages_right = check_no_dialogue(texts_right, messages_right)
+        messages = messages_left+messages_right
+        
         print(messages)
         parsed_texts = parse_texts(messages) # json내용 정리
         index_added = add_index(parsed_texts) # panel_index필드 추가

@@ -4,6 +4,7 @@ import time
 import json
 import re
 import subprocess
+import pyautogui
 import matplotlib.pyplot as plt
 from ultralytics import YOLO
 from yolov8_bubbles import * # bubble_detect(), bubble_on_panel(), text_on_bubble(), text_on_bubble_on_panel()
@@ -44,10 +45,13 @@ def split_image(name): # 이미지 자르기
         s3.upload_file(keep_image_path, "meowyeokbucket", f"comics/proc_images/{name}_keep.jpg")
         return "keep"
 
-def open_directory(path):  # 디렉토리가 존재하는지 확인
+def open_directory(path):
     if os.path.exists(path):
         subprocess.run(f'explorer "{path}"', shell=True)
-        time.sleep(1)
+        time.sleep(1) 
+        pyautogui.press('f11')
+        pyautogui.hotkey('ctrl', 'shift', '1')
+        time.sleep(1) 
     else:
         print(f"Error: The directory '{path}' does not exist.")
 

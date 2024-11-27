@@ -73,6 +73,8 @@ def get_result(image_name, is_new_assidtant = False, id = "0") :
         left_name, right_name = cropped_image_name+"_left", cropped_image_name+"_right"
         texts_left = get_text( left_name )
         texts_right = get_text( right_name )
+        print(texts_left)
+        print(texts_right)
         
         messages_left = assistant_image_captioning(left_name, texts_left, assistant_id, thread_id)
         messages_right = assistant_image_captioning(right_name, texts_right, assistant_id, thread_id)

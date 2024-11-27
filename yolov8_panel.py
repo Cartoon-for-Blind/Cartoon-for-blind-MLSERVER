@@ -48,14 +48,15 @@ def split_image(name): # 이미지 자르기
 def open_directory(path):
     if os.path.exists(path):
         subprocess.run(f'explorer "{path}"', shell=True)
-        time.sleep(1) 
-        pyautogui.press('f11')
+        time.sleep(0.5) 
         pyautogui.hotkey('ctrl', 'shift', '1')
         time.sleep(1) 
     else:
         print(f"Error: The directory '{path}' does not exist.")
 
 def sort_panels(boxes_with_objects, y_threshold=20, y_weight=1.5):
+    if not boxes_with_objects:
+        return []
 
     # x1 + y_weight * y1 기준으로 초기 정렬
     boxes_with_objects.sort(key=lambda item: item[0][0] + y_weight * item[0][1])

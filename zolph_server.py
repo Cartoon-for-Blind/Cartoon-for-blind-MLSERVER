@@ -61,7 +61,7 @@ def get_result(image_name, is_new_assidtant = False, id = "0") :
         texts = get_text(proc_image_name)
         messages = assistant_image_captioning(proc_image_name, texts, assistant_id, thread_id)
         print(texts)
-        print(messages)
+
         messages = check_no_dialogue(texts, messages)
         print(messages)
         parsed_texts = parse_texts(messages) # json내용 정리
